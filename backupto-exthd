@@ -1,0 +1,88 @@
+#!/bin/bash
+#
+# backup list of directories/files to external hd,
+# given a config file as argument
+#
+# using rsync (incremental)
+# reference:
+# - http://www.ibm.com/developerworks/aix/library/au-spunix_rsync/index.html#backup
+# found on: https://wiki.archlinux.org/index.php/Backup_programs
+#
+# the config file shall contain the variables:
+#
+# SRC_PATH_ABS      absolute path to the files to backup, e.g. $HOME
+#                   not needed if the list contains only absolute paths
+#
+# BACKUP_LIST       list of files/directories to backup,
+#                   the list may contain # comments and empty lines
+# BACKUP_PREFIX     backups will be in the form of PREFIX_DATE_TIME
+#
+# BACKUP_PATH       destination path, can be relative
+# MOUNTPOINT        mountpoint within dest. path
+#
+# ADD_RSYNC_OPT     additional rsync options
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
+
+echo "Backup start $DATE"
+
+# check args
+if [ $# -eq 0 ]; then
+    echo "A config file is expected as argument. Leaving."
+    exit 1
+fi
+
+# check config file
+if [ "${1##*.}" != "conf" ]; then
+    echo "A .conf file is expected. Leaving."
+    exit 1
+fi
+
+if [ ! -f "$1" ]; then
+    echo "Config file not found. Leaving."
+    exit 1
+fi
+
+source "$1"
+
+# check if external hd is mounted
+if ! $(mountpoint -q "$MOUNTPOINT"); then
+    echo "Backup device not mounted. Leaving."
+    exit 1
+fi
+
+# check/create destination path
+if [ ! -d "$BACKUP_PATH" ]; then
+    mkdir -p "$BACKUP_PATH"
+fi
+
+# process list
+# (removing comments and empty lines)
+grep -v "^#\|^\s*$" "$BACKUP_LIST" | while read -r line; do
+
+    echo -e "\nlist item: $line\n"
+
+    # remove trailing slashes
+    line="${line%/}"
+
+    # check if src absolute path
+    if [[ "$line" = /* ]]; then
+        SRC="$line"
+    else
+        SRC="${SRC_PATH_ABS%/}"/"$line"
+    fi
+
+    # incremental backup
+    # --link-dest: if relative path, it's relative to the destination dir (!)
+    rsync -av --link-dest=../"$BACKUP_PREFIX"_last \
+        $ADD_RSYNC_OPT \
+        "$SRC" \
+        "$BACKUP_PATH"/"$BACKUP_PREFIX"_"$DATE"
+
+done
+
+# relink last
+rm "$BACKUP_PATH"/"$BACKUP_PREFIX"_last
+ln -s "$BACKUP_PREFIX"_"$DATE" "$BACKUP_PATH"/"$BACKUP_PREFIX"_last
+
+echo "Backup end"

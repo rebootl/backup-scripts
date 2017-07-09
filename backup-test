@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# wrapper for backupto-exthd
+# output to log and screen
+#
+# test
+
+./backupto-exthd backup/backup-test.conf 2>&1 | tee -a backup/backup-test.log
