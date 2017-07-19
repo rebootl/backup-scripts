@@ -5,4 +5,4 @@
 #
 # test
 
-./backupto-exthd backup/backup-test.conf 2>&1 | tee -a backup/backup-test.log
+./backupto-exthd backup-conf/backup-test.conf 2>&1 | tee -a backup-log/backup-test.log
