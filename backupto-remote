@@ -1,0 +1,107 @@
+#!/bin/bash
+#
+# backup list of directories/files to remote host,
+# given a config file as argument
+#
+# using rsync (incremental)
+# reference:
+# - http://www.ibm.com/developerworks/aix/library/au-spunix_rsync/index.html#backup
+# found on: https://wiki.archlinux.org/index.php/Backup_programs
+#
+# the config file shall contain the variables:
+#
+# SRC_PATH_ABS      absolute path to the files to backup, e.g. $HOME
+#
+# BACKUP_LIST       list of files/directories to backup,
+#                   the list may contain # comments and empty lines
+# BACKUP_PREFIX     backups will be in the form of PREFIX_DATE_TIME
+#
+# BACKUP_PATH       destination path, can be relative
+# MOUNTPOINT        mountpoint within dest. path
+#
+# ADD_RSYNC_OPT     additional rsync options
+
+### Remote Settings
+
+REMOTE_HOST="raspel"
+REMOTE_USER="root"
+
+DEST_PATH="/home/cem/MYBOOK-P1/BACKUP-TEST/$HOSTNAME"
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
+
+###
+
+echo "Backup start $DATE"
+
+# check args
+if [ $# -eq 0 ]; then
+    echo "A config file is expected as argument. Leaving."
+    exit 1
+fi
+
+# check config file
+if [ "${1##*.}" != "conf" ]; then
+    echo "A .conf file is expected. Leaving."
+    exit 1
+fi
+
+if [ ! -f "$1" ]; then
+    echo "Config file not found. Leaving."
+    exit 1
+fi
+
+source "$1"
+
+# temporary preprocessed list file
+TMP_LIST="backup-${BACKUP_PREFIX}-remote-TMP.list"
+
+# check if external hd is mounted
+#if ! $(mountpoint -q "$MOUNTPOINT"); then
+#    echo "Backup device not mounted. Leaving."
+#    exit 1
+#fi
+
+# check/create destination path
+#if [ ! -d "$BACKUP_PATH" ]; then
+#    mkdir -p "$BACKUP_PATH"
+#fi
+
+# process list
+# (removing comments and empty lines)
+#grep -v "^#\|^\s*$" "$BACKUP_LIST" | while read -r line; do
+#
+#    echo -e "\nlist item: $line\n"
+#
+#    # remove trailing slashes
+#    line="${line%/}"
+#
+#    # check if src absolute path
+#    if [[ "$line" = /* ]]; then
+#        SRC="$line"
+#    else
+#        SRC="${SRC_PATH_ABS%/}"/"$line"
+#    fi
+
+# preprocess list
+# (removing comments and empty lines)
+grep -v "^#\|^\s*$" "$BACKUP_LIST" > "$TMP_LIST"
+
+# incremental backup
+# --link-dest: if relative path, it's relative to the destination dir (!)
+rsync -av -r --numeric-ids --link-dest=../"$BACKUP_PREFIX"_last \
+    $ADD_RSYNC_OPT \
+    --files-from="$TMP_LIST" \
+    "$SRC_PATH_ABS" \
+    "$REMOTE_USER"@"$REMOTE_HOST":"$DEST_PATH"/"$BACKUP_PREFIX"_"$DATE"
+
+#done
+# cleanup
+#rm "$TMP_LIST"
+
+# relink last
+# (rm needed or it goes into the link to create new one)
+ssh "$REMOTE_USER"@"$REMOTE_HOST" rm "$DEST_PATH"/"${BACKUP_PREFIX}_last"
+ssh "$REMOTE_USER"@"$REMOTE_HOST" ln -s "${BACKUP_PREFIX}_${DATE}" "$DEST_PATH"/"${BACKUP_PREFIX}_last"
+
+echo "Backup end"
