@@ -1,0 +1,25 @@
+#!/bin/bash (only for syntax highlight)
+# common functions
+
+check_config_arg() {
+    # check arguments for config file
+    if [ "${1##*.}" != "conf" ]; then
+        echo "A .conf file is expected. Leaving."
+        exit 1
+    fi
+
+    if [ ! -f "$1" ]; then
+        echo "Config file not found. Leaving."
+        exit 1
+    fi
+    return
+}
+
+preprocess_list() {
+    # preprocess list
+    # (removing comments and empty lines)
+    grep -v "^#\|^\s*$" "$BACKUP_LIST" > "$TMP_LIST"
+    echo "Preprocessed list:"
+    cat "$TMP_LIST"
+    echo
+}
