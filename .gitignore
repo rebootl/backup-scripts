@@ -1,3 +1,5 @@
 *-home*
 *-sys*
 backup-log/
+backup-conf/remote-*
+backup-conf/exthd-*

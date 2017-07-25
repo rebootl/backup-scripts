@@ -24,18 +24,16 @@
 #
 # ADD_RSYNC_OPT     additional rsync options
 
-DATE=$(date "+%Y-%m-%d_%H:%M:%S")
-
-###
-
 # includes
 . common_f
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
 
 echo "Backup start $DATE"
 
 # check args
 if [ ! $# -eq 2 ]; then
-    echo "Config file expected as argument. Leaving."
+    echo "Config files expected as argument. Leaving."
     exit 1
 fi
 
