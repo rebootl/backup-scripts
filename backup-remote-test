@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# wrapper for backupto-remote
+# output to log and screen
+#
+# test dir
+
+# set script path
+BINPATH="/home/cem/backup"
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
+
+"${BINPATH}/backupto-remote" \
+    "${BINPATH}/backup-conf/remote-raspel-test.conf" \
+    "${BINPATH}/backup-conf/backup-test.conf" \
+    2>&1 | tee -a "${BINPATH}/backup-log/backup-remote-raspel-test_${DATE}.log"

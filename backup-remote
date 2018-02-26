@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# wrapper for backupto-remote
+# output to log and screen
+#
+# $1 remote config name
+# $2 backup config name
+
+# set script path e.g.
+BINPATH="/home/username/backup"
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
+
+"${BINPATH}/backupto-remote" \
+    "${BINPATH}/backup-conf/remote-${1}.conf" \
+    "${BINPATH}/backup-conf/backup-${2}.conf" \
+    2>&1 | tee -a "${BINPATH}/backup-log/backup-${1}-${2}_${DATE}.log"
