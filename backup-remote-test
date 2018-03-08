@@ -3,14 +3,13 @@
 # wrapper for backupto-remote
 # output to log and screen
 #
-# test dir
-
-# set script path
-BINPATH="/home/cem/backup"
+# test dir / example file
+#
+# e.g. use w/ cron job like:
+# 15 23 * * * cd /home/user/backup && ./backup-remote-test
 
 DATE=$(date "+%Y-%m-%d_%H:%M:%S")
 
-"${BINPATH}/backupto-remote" \
-    "${BINPATH}/backup-conf/remote-raspel-test.conf" \
-    "${BINPATH}/backup-conf/backup-test.conf" \
-    2>&1 | tee -a "${BINPATH}/backup-log/backup-remote-raspel-test_${DATE}.log"
+./backupto-remote \
+    backup-conf/backup-test.conf \
+    2>&1 | tee -a "backup-log/backup-remote-raspel-test_${DATE}.log"

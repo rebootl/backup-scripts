@@ -2,14 +2,22 @@
 # common functions
 
 check_config_arg() {
-    # check arguments for config file
+    # check for config file
     if [ "${1##*.}" != "conf" ]; then
         echo "A .conf file is expected. Leaving."
         exit 1
     fi
-
     if [ ! -f "$1" ]; then
         echo "Config file not found. Leaving."
+        exit 1
+    fi
+    return
+}
+
+check_config_opts() {
+    # check config options
+    if [ ! -f "$BACKUP_LIST" ]; then
+        echo "Backup list not found, leaving."
         exit 1
     fi
     return

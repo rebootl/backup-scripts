@@ -3,4 +3,5 @@
 backup-log/
 backup-conf/remote-*
 backup-conf/exthd-*
+backup-conf/backup-test.conf
 Archive/

@@ -3,15 +3,13 @@
 # wrapper for backupto-remote
 # output to log and screen
 #
-# $1 remote config name
-# $2 backup config name
-
-# set script path e.g.
-BINPATH="/home/username/backup"
+# test dir / example file
+#
+# e.g. use w/ cron job like:
+# 15 23 * * * cd /home/user/backup && ./backup-remote-test
 
 DATE=$(date "+%Y-%m-%d_%H:%M:%S")
 
-"${BINPATH}/backupto-remote" \
-    "${BINPATH}/backup-conf/remote-${1}.conf" \
-    "${BINPATH}/backup-conf/backup-${2}.conf" \
-    2>&1 | tee -a "${BINPATH}/backup-log/backup-${1}-${2}_${DATE}.log"
+./backupto-remote \
+    backup-conf/backup-example.conf \
+    2>&1 | tee -a "backup-log/backup-remote-raspel-test_${DATE}.log"
