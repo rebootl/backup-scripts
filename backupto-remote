@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# backup list of directories/files to remote host,
+# backup selected directories/files to remote host,
 # config file as argument
 #
 # $1 settings file
@@ -10,6 +10,7 @@
 # SRC_PATH_ABS      absolute path to the files to backup, e.g. $HOME
 # BACKUP_LIST       list of files/directories to backup,
 #                   the list may contain # comments and empty lines
+# EXCLUDES_LIST     list containing excludes, acc. to rsync --exclude-from
 #
 # BACKUP_PREFIX     backups will be in the form of PREFIX_DATE_TIME
 # DEST_PATH         destination path, can be relative
@@ -17,7 +18,7 @@
 # REMOTE_HOST       remote hostname/ip addr.
 # REMOTE_USER       remote username to use for login
 #
-# ADD_RSYNC_OPT     additional rsync options, e.g. used -R used for system backup
+# ADD_RSYNC_OPTS    additional rsync options, e.g. used -R used for system backup
 #
 #
 # using rsync (incremental)
@@ -28,12 +29,6 @@
 
 # includes
 . common_f
-
-# check args
-#if [ ! $# -eq 2 ]; then
-#    echo "Config files expected as argument. Leaving."
-#    exit 1
-#fi
 
 check_config_arg "$1"
 source "$1"
@@ -50,8 +45,9 @@ preprocess_list
 # incremental backup
 # --link-dest: if relative path, it's relative to the destination dir (!)
 rsync -av -r --numeric-ids --link-dest=../"$BACKUP_PREFIX"_last \
-    $ADD_RSYNC_OPT \
     --files-from="$TMP_LIST" \
+    --exclude-from="$EXCLUDES_LIST" \
+    $ADD_RSYNC_OPTS \
     "$SRC_PATH_ABS" \
     "$REMOTE_USER"@"$REMOTE_HOST":"$DEST_PATH"/"$BACKUP_PREFIX"_"$DATE"
 

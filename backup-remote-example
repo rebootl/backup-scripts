@@ -6,10 +6,10 @@
 # test dir / example file
 #
 # e.g. use w/ cron job like:
-# 15 23 * * * cd /home/user/backup && ./backup-remote-test
+# 15 23 * * * cd /home/user/backup && ./backup-remote-example
 
 DATE=$(date "+%Y-%m-%d_%H:%M:%S")
 
 ./backupto-remote \
     backup-conf/backup-example.conf \
-    2>&1 | tee -a "backup-log/backup-remote-raspel-test_${DATE}.log"
+    2>&1 | tee -a "backup-log/backup-remote-example_${DATE}.log"

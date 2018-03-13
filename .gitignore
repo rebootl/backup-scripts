@@ -1,7 +1,10 @@
-*-home*
-*-sys*
-backup-log/
-backup-conf/remote-*
-backup-conf/exthd-*
-backup-conf/backup-test.conf
 Archive/
+backup-conf/backup-*.conf
+!backup-conf/backup-example.conf
+backup-conf/exthd-*
+backup-*.list
+!backup-example.list
+!backup-example-excludes.list
+backup-remote*
+!backup-remote-example
+backup-log/
