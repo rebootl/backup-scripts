@@ -12,4 +12,4 @@ DATE=$(date "+%Y-%m-%d_%H:%M:%S")
 
 ./backupto-remote \
     backup-conf/backup-example.conf \
-    2>&1 | tee -a "backup-log/backup-remote-example_${DATE}.log"
+    2>&1 | tee -a "backup-log/backup-remote-PREFIX_${DATE}.log"

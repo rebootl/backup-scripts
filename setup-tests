@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# create lists for testfiles using current working directory
+#
+
+echo "# comment" > backup-test.list
+echo "$(pwd)/testfiles/test" >> backup-test.list
+echo "$(pwd)/testfiles/test2" >> backup-test.list
+echo "" >> backup-test.list
+echo "" >> backup-test.list
+echo "# .." >> backup-test.list
+
+echo "$(pwd)/testfiles/test2/lulu" > backup-test-excludes.list
+
+# create log directory
+mkdir -p backup-log
