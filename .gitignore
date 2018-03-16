@@ -7,4 +7,5 @@ backup-*.list
 !backup-example-excludes.list
 backup-remote*
 !backup-remote-example
+backup-local*
 backup-log/

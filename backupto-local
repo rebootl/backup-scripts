@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# backup selected directories/files to external harddisk,
+# config file as argument
+# based on the backupto-remote version
+#
+# $1 settings file
+#
+# the config file shall contain the variables:
+#
+# SRC_PATH_ABS      absolute path to the files to backup, e.g. $HOME
+# BACKUP_LIST       list of files/directories to backup,
+#                   the list may contain # comments and empty lines
+# EXCLUDES_LIST     list containing excludes, acc. to rsync --exclude-from
+#
+# BACKUP_PREFIX     backups will be in the form of PREFIX_DATE_TIME
+# DEST_PATH         destination path, can be relative
+#
+# ADD_RSYNC_OPTS    additional rsync options, e.g. used -R used for system backup
+#
+#
+# using rsync (incremental)
+# reference:
+# - http://www.ibm.com/developerworks/aix/library/au-spunix_rsync/index.html#backup
+# found on: https://wiki.archlinux.org/index.php/Backup_programs
+#
+
+# includes
+. common_f
+
+check_config_arg "$1"
+source "$1"
+check_config_opts
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
+echo "Backup start: $DATE"
+
+# temporary preprocessed list file
+TMP_LIST="/tmp/backup-${BACKUP_PREFIX}-remote-TMP.list"
+
+preprocess_list
+
+# incremental backup
+# --link-dest: if relative path, it's relative to the destination dir (!)
+rsync -av -r --numeric-ids --link-dest=../"$BACKUP_PREFIX"_last \
+    --files-from="$TMP_LIST" \
+    --exclude-from="$EXCLUDES_LIST" \
+    $ADD_RSYNC_OPTS \
+    "$SRC_PATH_ABS" \
+    "$DEST_PATH"/"$BACKUP_PREFIX"_"$DATE"
+
+# exit on failure
+if [[ "$?" -ne 0 ]]; then
+    echo "A failure occured during rsync, exiting."
+    rm "$TMP_LIST"
+    exit 1
+fi
+
+# cleanup
+rm "$TMP_LIST"
+
+# relink last
+# (rm needed or it goes into the link to create new one)
+rm "$DEST_PATH"/"${BACKUP_PREFIX}_last"
+ln -s "${BACKUP_PREFIX}_${DATE}" "$DEST_PATH"/"${BACKUP_PREFIX}_last"
+
+echo "Backup end."
