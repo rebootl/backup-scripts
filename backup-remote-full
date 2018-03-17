@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# wrapper for backupto-remote
+# output to log and screen
+#
+# test dir / example file
+#
+# e.g. use w/ cron job like:
+# 15 23 * * * cd /home/user/backup && ./backup-remote-example
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
+
+./backupto-remote \
+    backup-conf/backup-full.conf \
+    2>&1 | tee -a "backup-log/backup-remote-FULL_${DATE}.log"
