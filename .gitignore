@@ -9,4 +9,6 @@ backup-remote*
 !backup-remote-full
 !backup-remote-test
 backup-local*
+!backup-local-full
+!backup-local-test
 backup-log/
