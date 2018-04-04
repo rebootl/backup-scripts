@@ -23,4 +23,4 @@ if ! $(mountpoint -q "$DEST_MOUNTPOINT"); then
 fi
 
 # -H preserve hard links !
-rsync -av -H --numeric-ids "$SRC_DIR" "$DEST_MOUNTPOINT"
+rsync -av -H --numeric-ids --delete "$SRC_DIR" "$DEST_MOUNTPOINT"
