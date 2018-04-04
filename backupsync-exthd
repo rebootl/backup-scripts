@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# script to synchronize backup to second external harddisc
+#
+# using rsync
+#
+# expected config file options:
+# SRC_DIR           source dir
+# DEST_MOUNTPOINT   destination mount
+
+#MOUNTPOINT=/home/cem/MOUNT-EXTHD-CRYPT
+
+# includes
+. common_f
+
+check_config_arg "$1"
+source "$1"
+
+# check if external hd is mounted
+if ! $(mountpoint -q "$DEST_MOUNTPOINT"); then
+    echo "Backup device not mounted. Leaving."
+    exit 1
+fi
+
+# -H preserve hard links !
+rsync -av -H --numeric-ids "$SRC_DIR" "$DEST_MOUNTPOINT"

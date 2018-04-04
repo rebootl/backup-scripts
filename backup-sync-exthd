@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# wrapper for backupsync-exthd
+# output to log and screen
+#
+
+DATE=$(date "+%Y-%m-%d_%H:%M:%S")
+
+./backupsync-exthd \
+    backup-conf/backup-sync-exthd.conf \
+    2>&1 | tee -a "backup-log/backup-sync-exthd_${DATE}.log"
