@@ -31,3 +31,10 @@ preprocess_list() {
     cat "$TMP_LIST"
     echo
 }
+
+create_dir() {
+    # create dir $1
+    if [ ! -d "$1" ]; then
+        mkdir -p "$1"
+    fi
+}
