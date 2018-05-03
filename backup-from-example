@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# wrapper for backupto-remote
+# wrapper for backup.. scripts
 # output to log and screen
 #
 # test dir / example file
