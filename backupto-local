@@ -13,7 +13,7 @@
 #                   the list may contain # comments and empty lines
 # EXCLUDES_LIST     list containing excludes, acc. to rsync --exclude-from
 #
-# BACKUP_PREFIX     backups will be in the form of PREFIX_DATE_TIME
+# BACKUP_PREFIX     backups will be in the form of daily.0
 # DEST_PATH         destination path, can be relative
 #
 # ADD_RSYNC_OPTS    additional rsync options, e.g. used -R used for system backup
@@ -36,18 +36,18 @@ DATE=$(date "+%Y-%m-%d_%H:%M:%S")
 echo "Backup start: $DATE"
 
 # temporary preprocessed list file
-TMP_LIST="/tmp/backup-${BACKUP_PREFIX}-remote-TMP.list"
+TMP_LIST="/tmp/backup-remote-TMP.list"
 
 preprocess_list
 
 # incremental backup
 # --link-dest: if relative path, it's relative to the destination dir (!)
-rsync -av -r --numeric-ids --link-dest=../"$BACKUP_PREFIX"_last \
+rsync -av -r --numeric-ids \
     --files-from="$TMP_LIST" \
     --exclude-from="$EXCLUDES_LIST" \
     $ADD_RSYNC_OPTS \
     "$SRC_PATH_ABS" \
-    "$DEST_PATH"/"$BACKUP_PREFIX"_"$DATE"
+    "$DEST_PATH"/daily.0
 
 # exit on failure
 if [[ "$?" -ne 0 ]]; then
@@ -61,7 +61,7 @@ rm "$TMP_LIST"
 
 # relink last
 # (rm needed or it goes into the link to create new one)
-rm "$DEST_PATH"/"${BACKUP_PREFIX}_last"
-ln -s "${BACKUP_PREFIX}_${DATE}" "$DEST_PATH"/"${BACKUP_PREFIX}_last"
+#rm "$DEST_PATH"/"${BACKUP_PREFIX}_last"
+#ln -s "${BACKUP_PREFIX}_${DATE}" "$DEST_PATH"/"${BACKUP_PREFIX}_last"
 
 echo "Backup end."

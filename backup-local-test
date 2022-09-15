@@ -11,5 +11,5 @@
 DATE=$(date "+%Y-%m-%d_%H:%M:%S")
 
 ./backupto-local \
-    backup-conf/backup-test.conf \
+    backup-conf/backup-local-test.conf \
     2>&1 | tee -a "backup-log/backup-local-TEST_${DATE}.log"
