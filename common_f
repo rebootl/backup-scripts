@@ -4,11 +4,11 @@
 check_config_arg() {
     # check for config file
     if [ "${1##*.}" != "conf" ]; then
-        echo "A .conf file is expected. Leaving." >> "$LOGFILE"
+        echo "A .conf file is expected. Leaving."
         exit 1
     fi
     if [ ! -f "$1" ]; then
-        echo "Config file not found. Leaving." >> "$LOGFILE"
+        echo "Config file not found. Leaving."
         exit 1
     fi
     return
@@ -17,19 +17,10 @@ check_config_arg() {
 check_config_opts() {
     # check config options
     if [ ! -f "$BACKUP_LIST" ]; then
-        echo "Backup list not found, leaving." >> "$LOGFILE"
+        echo "Backup list not found, leaving."
         exit 1
     fi
     return
-}
-
-preprocess_list() {
-    # preprocess list
-    # (removing comments and empty lines)
-    grep -v "^#\|^\s*$" "$BACKUP_LIST" > "$TMP_LIST"
-    echo "Preprocessed list:" >> "$LOGFILE"
-    cat "$TMP_LIST" >> "$LOGFILE"
-    echo >> "$LOGFILE"
 }
 
 create_dir() {

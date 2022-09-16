@@ -1,10 +1,7 @@
 #!/bin/bash
 #
-# backup selected directories/files to external harddisk,
+# backup selected directories/files,
 # config file as argument
-# based on the backupto-remote version
-#
-# $1 settings file
 #
 # the config file shall contain the variables:
 #
@@ -13,55 +10,38 @@
 #                   the list may contain # comments and empty lines
 # EXCLUDES_LIST     list containing excludes, acc. to rsync --exclude-from
 #
-# BACKUP_PREFIX     backups will be in the form of daily.0
 # DEST_PATH         destination path, can be relative
 #
 # ADD_RSYNC_OPTS    additional rsync options, e.g. used -R used for system backup
-#
-#
-# using rsync (incremental)
-# reference:
-# - http://www.ibm.com/developerworks/aix/library/au-spunix_rsync/index.html#backup
-# found on: https://wiki.archlinux.org/index.php/Backup_programs
 #
 
 # includes
 . common_f
 
 check_config_arg "$1"
-source "$1"
+. "$1"
 check_config_opts
 
+create_dir "$DEST_PATH"
+
+LOGFILE="$DEST_PATH"/daily.0.log
 DATE=$(date "+%Y-%m-%d_%H:%M:%S")
-echo "Backup start: $DATE"
 
-# temporary preprocessed list file
-TMP_LIST="/tmp/backup-remote-TMP.list"
+echo "Backup start: $DATE" > "$LOGFILE"
 
-preprocess_list
-
-# incremental backup
-# --link-dest: if relative path, it's relative to the destination dir (!)
-rsync -av -r --numeric-ids \
-    --files-from="$TMP_LIST" \
+# backup
+rsync -av -i -r --numeric-ids \
+    --files-from="$BACKUP_LIST" \
     --exclude-from="$EXCLUDES_LIST" \
+    --delete \
     $ADD_RSYNC_OPTS \
     "$SRC_PATH_ABS" \
-    "$DEST_PATH"/daily.0
+    "$DEST_PATH"/daily.0 >> "$LOGFILE" 2>&1
 
 # exit on failure
 if [[ "$?" -ne 0 ]]; then
-    echo "A failure occured during rsync, exiting."
-    rm "$TMP_LIST"
+    echo "A failure occured during rsync, exiting." >> "$LOGFILE"
     exit 1
 fi
 
-# cleanup
-rm "$TMP_LIST"
-
-# relink last
-# (rm needed or it goes into the link to create new one)
-#rm "$DEST_PATH"/"${BACKUP_PREFIX}_last"
-#ln -s "${BACKUP_PREFIX}_${DATE}" "$DEST_PATH"/"${BACKUP_PREFIX}_last"
-
-echo "Backup end."
+echo "Backup end." >> "$LOGFILE"

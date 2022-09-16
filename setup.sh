@@ -3,12 +3,8 @@
 # create lists for testfiles using current working directory
 #
 
-echo "# comment" > backup-test.list
-echo "$(pwd)/testfiles/test" >> backup-test.list
+echo "$(pwd)/testfiles/test" > backup-test.list
 echo "$(pwd)/testfiles/test2" >> backup-test.list
-echo "" >> backup-test.list
-echo "" >> backup-test.list
-echo "# .." >> backup-test.list
 
 echo "$(pwd)/testfiles/test2/lulu" > backup-test-excludes.list
 
@@ -17,13 +13,8 @@ if [ ! -d "backup-conf" ]; then
     cp -r backup-conf-orig backup-conf
 fi
 if [ ! -f "backup-${HOSTNAME}.list" ]; then
-    echo FOO
     cp backup-example.list "backup-${HOSTNAME}.list"
 fi
 if [ ! -f "backup-${HOSTNAME}-excludes.list" ]; then
-    echo FOO
     cp backup-example.list "backup-${HOSTNAME}-excludes.list"
 fi
-
-# create log directory
-mkdir -p backup-log

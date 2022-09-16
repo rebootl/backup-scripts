@@ -1,9 +1,6 @@
-# important system directories
 /boot/syslinux
 /etc
 /usr/local/sbin
 /var/lib/pacman/local
 /var/log
-
-# user home directories
 /home/user

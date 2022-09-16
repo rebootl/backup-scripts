@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# efficiently rotate backups using rsync hard links feature
+# efficiently rotate backups using hard links feature
 #
 
 # includes
@@ -10,25 +10,23 @@ check_config_arg "$1"
 source "$1"
 check_config_opts
 
-for ((i=6; i>=0; i--)); do
+if [[ -d "$DEST_PATH"/daily.7 ]]; then
+    rm -rf "$DEST_PATH"/daily.7
+    rm "$DEST_PATH"/daily.7.log
+fi
+
+for ((i=6; i>=1; i--)); do
     DAY=$i
     NEXT=$(($DAY + 1))
 
-    ROTLOG="$DEST_PATH"/daily."$NEXT".rotate.log
-
     if [[ -d "$DEST_PATH"/daily."$DAY" ]]; then
 
-        echo "rotate day $DAY to $NEXT" > "$ROTLOG"
-
-        rsync -av -i -r --numeric-ids --link-dest="$DEST_PATH"/daily."$DAY" \
-            --delete \
-            "$DEST_PATH"/daily."$DAY"/ \
-            "$DEST_PATH"/daily."$NEXT" >> "$ROTLOG"
-
-        # update timestamp
-        #touch "$DEST_PATH"/daily."$NEXT"
+        mv "$DEST_PATH"/daily."$DAY" "$DEST_PATH"/daily."$NEXT"
 
         # move logfile
         mv "$DEST_PATH"/daily."$DAY".log "$DEST_PATH"/daily."$NEXT".log
     fi
 done
+
+cp -al "$DEST_PATH"/daily.0 "$DEST_PATH"/daily.1
+mv "$DEST_PATH"/daily.0.log "$DEST_PATH"/daily.1.log
