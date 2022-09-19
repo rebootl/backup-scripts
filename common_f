@@ -1,6 +1,13 @@
 #!/bin/bash (only for syntax highlight)
 # common functions
 
+check_argument_present() {
+    if [ -z "$1" ]; then
+        echo "Argument missing. Leaving."
+        exit 1
+    fi
+}
+
 check_config_arg() {
     # check for config file
     if [ "${1##*.}" != "conf" ]; then

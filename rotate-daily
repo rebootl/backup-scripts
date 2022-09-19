@@ -10,12 +10,12 @@ check_config_arg "$1"
 source "$1"
 check_config_opts
 
-if [[ -d "$DEST_PATH"/daily.7 ]]; then
-    rm -rf "$DEST_PATH"/daily.7
-    rm "$DEST_PATH"/daily.7.log
+if [[ -d "$DEST_PATH"/daily.6 ]]; then
+    rm -rf "$DEST_PATH"/daily.6
+    rm "$DEST_PATH"/daily.6.log
 fi
 
-for ((i=6; i>=1; i--)); do
+for ((i=5; i>=1; i--)); do
     DAY=$i
     NEXT=$(($DAY + 1))
 

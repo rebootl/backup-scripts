@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+# efficiently rotate backups using hard links feature
+#
+
+# includes
+. common_f
+
+check_config_arg "$1"
+source "$1"
+check_config_opts
+
+if [[ -d "$DEST_PATH"/yearly.9 ]]; then
+    rm -rf "$DEST_PATH"/yearly.9
+    rm "$DEST_PATH"/yearly.9.log
+fi
+
+for ((i=8; i>=0; i--)); do
+    DAY=$i
+    NEXT=$(($DAY + 1))
+
+    if [[ -d "$DEST_PATH"/yearly."$DAY" ]]; then
+
+        mv "$DEST_PATH"/yearly."$DAY" "$DEST_PATH"/yearly."$NEXT"
+
+        # move logfile
+        mv "$DEST_PATH"/yearly."$DAY".log "$DEST_PATH"/yearly."$NEXT".log
+    fi
+done
+
+if [[ -d "$DEST_PATH"/monthly.11 ]]; then
+    cp -al "$DEST_PATH"/monthly.11 "$DEST_PATH"/yearly.0
+    cp "$DEST_PATH"/monthly.11.log "$DEST_PATH"/yearly.0.log
+fi
